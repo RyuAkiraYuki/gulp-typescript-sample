@@ -1,10 +1,38 @@
-import {bla} from "./bla/a"
+import { MainComponent } from "./components/main/mainComponent";
 import * as angular from "angular";
+import "angular-material";
+import "angular-ui-router";
 
-let a = 5;
+var mdl: ng.IModule = angular.module('SampleApp', ['ui.router', 'ngMaterial']);
 
-console.log("value of a: ",a);
+mdl.component('mainComponent', MainComponent());
 
-let b = 10;
-let c = new bla(10);
-c.shout();
+mdl.config(['$compileProvider', '$mdThemingProvider', (compileProvider: ng.ICompileProvider, themingProvider: angular.material.IThemingProvider) => {
+	compileProvider.debugInfoEnabled(false);
+	compileProvider.commentDirectivesEnabled(false);
+	compileProvider.cssClassDirectivesEnabled(false);
+
+	themingProvider.theme('dark-grey').backgroundPalette('grey').dark();
+	themingProvider.theme('dark-orange').backgroundPalette('orange').dark();
+	themingProvider.theme('dark-purple').backgroundPalette('deep-purple').dark();
+	themingProvider.theme('dark-blue').backgroundPalette('blue').dark();
+}]);
+
+mdl.config([
+	'$stateProvider', '$locationProvider',
+	(stateProvider: angular.ui.IStateProvider, locationProvider: ng.ILocationProvider) => {
+
+		locationProvider.html5Mode(true);
+
+		stateProvider.state({
+			name: 'main',
+			url: '/:num?',
+			component: 'mainComponent',
+			resolve: {
+				input: ['$stateParams', (stateParams: ng.ui.IStateParamsService) => {
+					return stateParams['num'] || 1;
+				}]
+			}
+		});
+	}
+]);
