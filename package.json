@@ -14,6 +14,7 @@
     "@types/angular": "^1.6.17",
     "@types/angular-material": "^1.1.51",
     "@types/angular-ui-router": "^1.1.36",
+    "@types/jquery": "^2.0.45",
     "gulp": "^3.9.0",
     "gulp-add-src": "^0.2.0",
     "gulp-concat": "^2.6.1",
@@ -22,6 +23,7 @@
     "gulp-string-replace": "^0.4.0",
     "gulp-typescript": "^2.10.0",
     "gulp-util": "^3.0.8",
+    "jquery": "^3.2.1",
     "typescript": "^2.3.3"
   }
 }

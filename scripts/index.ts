@@ -1,7 +1,4 @@
 import { MainComponent } from "./components/main/mainComponent";
-import * as angular from "angular";
-import "angular-material";
-import "angular-ui-router";
 
 var mdl: ng.IModule = angular.module('SampleApp', ['ui.router', 'ngMaterial']);
 
@@ -36,3 +33,8 @@ mdl.config([
 		});
 	}
 ]);
+
+/* fuck this shit */
+angular.element(function() {
+	angular.bootstrap($('#app-base'), ['SampleApp']);
+});

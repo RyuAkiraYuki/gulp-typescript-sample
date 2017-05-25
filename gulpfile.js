@@ -34,22 +34,28 @@ gulp.task('less', function () {
 
 gulp.task('html', function () {
 
-	var jsToLoadAfterRequire = 'data-main="output.js"';
+	var scriptSrc = '<script type="text/javascript" src="output.js"></script>'
 
 	if (isProd) {
-		jsToLoadAfterRequire = '';
+		scriptSrc = '';
 	}
 
-	return gulp.src('scripts/**/*.html')
-		.pipe(addSrc('_index.html'))
-		.pipe(replace('{:require-data-source}', jsToLoadAfterRequire))
+	return gulp.src('_index.html')
+		.pipe(replace('</html>', ''))
+		.pipe(replace('</body>', ''))
+		.pipe(replace('</div>', ''))
+		.pipe(addSrc('scripts/**/*.html'))
+		.pipe(replace('{:require-data-source}', scriptSrc))
 		.pipe(concat('index.html'))
+		.pipe(insert.append("\n</div></body></html>"))
 		.pipe(gulp.dest('output'));
 });
 
 
 gulp.task('default',["compile", "less", "html"], function() {
     if (!isProd) {
-    	gulp.watch('scripts/**/*', ['compile']);
+		gulp.watch('scripts/**/*.ts', ['compile']);
+		gulp.watch('scripts/**/*.css', ['less']);
+		gulp.watch('_index.html', ['html']);
 	}
 });
