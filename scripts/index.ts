@@ -1,4 +1,5 @@
 import {bla} from "./bla/a"
+import * as angular from "angular";
 
 let a = 5;
 
