@@ -7,6 +7,7 @@ var less = require('gulp-less');
 var concat = require('gulp-concat');
 var addSrc = require('gulp-add-src');
 var replace = require('gulp-string-replace');
+var inject = require('gulp-inject');
 
 var path = require('path');
 
@@ -32,30 +33,46 @@ gulp.task('less', function () {
 		.pipe(gulp.dest('output'));
 });
 
-gulp.task('html', function () {
+gulp.task('html', ['less'], function () {
 
 	var scriptSrc = '<script type="text/javascript" src="output.js"></script>'
+	var bundledCssSrc = gulp.src('output/output.css');
+	var viewTemplatesSrc = gulp.src('scripts/**/*.html');
 
 	if (isProd) {
 		scriptSrc = '';
 	}
 
-	return gulp.src('_index.html')
-		.pipe(replace('</html>', ''))
-		.pipe(replace('</body>', ''))
-		.pipe(replace('</div>', ''))
-		.pipe(addSrc('scripts/**/*.html'))
-		.pipe(replace('{:require-data-source}', scriptSrc))
+	var htmlCreationStream = gulp.src('_index.html')
+		.pipe(replace('{:js-reference-for-dev}', scriptSrc))
+		.pipe(inject(bundledCssSrc, {
+			starttag: '/* inject:css */',
+			endtag: '/* endinject */',
+			transform: (filePath, file) => {
+				return file.contents.toString('utf8');
+			}
+		}))
+		.pipe(inject(viewTemplatesSrc, {
+			transform: (filePath, file) => {
+				return file.contents.toString('utf8');
+			}
+		}))
 		.pipe(concat('index.html'))
-		.pipe(insert.append("\n</div></body></html>"))
-		.pipe(gulp.dest('output'));
+
+		// Maybe need to remove html and body, need to check if SN can handle them
+		if (isProd) {
+
+		}
+
+		return htmlCreationStream.pipe(gulp.dest('output'));
 });
 
 
 gulp.task('default',["compile", "less", "html"], function() {
     if (!isProd) {
 		gulp.watch('scripts/**/*.ts', ['compile']);
-		gulp.watch('scripts/**/*.css', ['less']);
+		gulp.watch('scripts/**/*.less', ['less', 'html']);
 		gulp.watch('_index.html', ['html']);
+		gulp.watch('gulpfile.js', ['default']);
 	}
 });
