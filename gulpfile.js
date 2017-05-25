@@ -1,13 +1,16 @@
 var gulp = require('gulp');
+var util = require('gulp-util');
 
 var ts = require('gulp-typescript');
 var insert = require('gulp-insert');
 var less = require('gulp-less');
 var concat = require('gulp-concat');
-var addsrc = require('gulp-add-src');
+var addSrc = require('gulp-add-src');
+var replace = require('gulp-string-replace');
 
 var path = require('path');
-var es = require('event-stream');
+
+var isProd = util.env.production;
 
 var tsProject = ts.createProject('tsconfig.json', {
     typescript: require('typescript'),
@@ -30,13 +33,23 @@ gulp.task('less', function () {
 });
 
 gulp.task('html', function () {
+
+	var jsToLoadAfterRequire = 'data-main="output.js"';
+
+	if (isProd) {
+		jsToLoadAfterRequire = '';
+	}
+
 	return gulp.src('scripts/**/*.html')
-		.pipe(addsrc('index.html'))
+		.pipe(addSrc('_index.html'))
+		.pipe(replace('{:require-data-source}', jsToLoadAfterRequire))
 		.pipe(concat('index.html'))
 		.pipe(gulp.dest('output'));
 });
 
 
 gulp.task('default',["compile", "less", "html"], function() {
-    gulp.watch('scripts/**/*', ['compile']);
+    if (!isProd) {
+    	gulp.watch('scripts/**/*', ['compile']);
+	}
 });
