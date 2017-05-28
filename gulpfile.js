@@ -22,7 +22,7 @@ gulp.task('compile', function () {
 	return gulp.src('scripts/**/*.ts')
 		.pipe(ts(tsProject))
 		.pipe(insert.append("\nrequirejs(['index']);"))
-		.pipe(gulp.dest('output')); //if you want output in root folder: .pipe(gulp.dest(''));
+		.pipe(gulp.dest('output'));
 });
 
 
