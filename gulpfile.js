@@ -5,7 +5,6 @@ var ts = require('gulp-typescript');
 var insert = require('gulp-insert');
 var less = require('gulp-less');
 var concat = require('gulp-concat');
-var addSrc = require('gulp-add-src');
 var replace = require('gulp-string-replace');
 var inject = require('gulp-inject');
 
@@ -57,11 +56,12 @@ gulp.task('html', ['less'], function () {
 				return file.contents.toString('utf8');
 			}
 		}))
+		.pipe(replace('<base-string>', isProd ? '/x_26272_sgimport_web-pack-thingy.do/' : '/'))
 		.pipe(concat('index.html'))
 
 		// Maybe need to remove html and body, need to check if SN can handle them
 		if (isProd) {
-
+			htmlCreationStream = htmlCreationStream.pipe(replace('<!doctype html>', ''));
 		}
 
 		return htmlCreationStream.pipe(gulp.dest('output'));
